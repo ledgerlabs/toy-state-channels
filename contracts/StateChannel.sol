@@ -1,9 +1,12 @@
+import "BulletinBoard.sol";
+
 contract StateChannel {
 
 	uint nonce = 0;
 	mapping (bytes32 =>
 			mapping (address => bool)) consents;
 	address[] participants;
+	BulletinBoard public bulletinBoard;
 
 	modifier onlySelf {
 		if (msg.sender == address(this)) {
@@ -15,6 +18,7 @@ contract StateChannel {
 
 	function StateChannel(address[] _participants) {
 		participants = _participants;
+		bulletinBoard = new BulletinBoard(this);
 	}
 
 	function eval(
