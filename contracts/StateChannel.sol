@@ -2,9 +2,14 @@ import "BulletinBoard.sol";
 
 contract StateChannel {
 
-	uint nonce = 0;
+	enum ConsentState {
+		NONE,
+		CONSENTED,
+		EXECUTED
+	}
+
 	mapping (bytes32 =>
-			mapping (address => bool)) consents;
+			mapping (address => ConsentState)) consentStates;
 	address[] participants;
 	BulletinBoard public bulletinBoard;
 
@@ -22,14 +27,12 @@ contract StateChannel {
 	}
 
 	function eval(
-		uint _nonce,
 		address[] _calledContracts,
 		bytes4[] _methodSignatures,
 		uint[] _argumentLengths,
 		bytes32[] _arguments
 	) {
 		if (
-			_nonce <= nonce ||
 			_calledContracts.length != _methodSignatures.length ||
 			_calledContracts.length != _argumentLengths.length
 		) {
@@ -38,14 +41,15 @@ contract StateChannel {
 
 		uint i;
 		uint j;
-		bytes32 hash = sha3(_nonce, _calledContracts, _methodSignatures, _argumentLengths, _arguments);
+		bytes32 hash = sha3(_calledContracts, _methodSignatures, _argumentLengths, _arguments);
 
 		for (i = 0; i < participants.length; i++) {
-			if (!consents[hash][participants[i]]) {
+			if (consentStates[hash][participants[i]] == ConsentState.CONSENTED) {
+				consentStates[hash][participants[i]] = ConsentState.EXECUTED;
+			} else {
 				throw;
 			}
 		}
-		nonce = _nonce;
 
 		uint argumentsIndex = 0;
 		for (i = 0; i < _calledContracts.length; i++) {
@@ -62,7 +66,7 @@ contract StateChannel {
 	}
 
 	function consent(bytes32 _hash) {
-		consents[_hash][msg.sender] = true;
+		consentStates[_hash][msg.sender] = ConsentState.CONSENTED;
 	}
 
 	function sendEther(address _recipient, uint _amount) external onlySelf {
@@ -78,7 +82,7 @@ contract StateChannel {
 	function clean(bytes32[] _hashes, address[] _participants) external onlySelf {
 		for (uint i = 0; i < _hashes.length; i++) {
 			for (uint j = 0; j < _participants.length; j++) {
-				delete consents[_hashes[i]][_participants[j]];
+				delete consentStates[_hashes[i]][_participants[j]];
 			}
 		}
 	}
