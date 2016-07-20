@@ -1,6 +1,6 @@
 contract Adjudicator {
 
-	bool frozen = false;
+	bool public frozen = false;
 	uint nonce = 0;
 	uint lastTimestamp = 0;
 	address owner;
