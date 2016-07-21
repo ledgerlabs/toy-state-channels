@@ -1,6 +1,6 @@
 import "BulletinBoard.sol";
 
-contract StateChannel {
+contract UniversalConsent {
 
 	enum ConsentState {
 		NONE,
