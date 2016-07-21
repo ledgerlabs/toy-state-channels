@@ -1,3 +1,5 @@
+import "Rules.sol";
+
 contract Adjudicator {
 
 	bool public frozen = false;
@@ -40,7 +42,16 @@ contract Adjudicator {
 		state = _state;
 	}
 
-	function appeal() external onlyOwner notFrozen;// this will have something to do with the rules
+	function appeal(Rules _rules, bytes4 _methodSignature, bytes32[] _arguments) external onlyOwner notFrozen {
+		if (!_rules.call(_methodSignature, _arguments)) {
+			throw;
+		}
+
+		state.length = _rules.getDecidedStateLength();
+		for (uint i = 0; i < state.length; i++) {
+			state[i] = _rules.getDecidedStateAt(i);
+		}
+	}
 
 	function giveConsent() external onlyOwner notFrozen {
 		frozen = true;
