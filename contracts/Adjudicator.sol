@@ -32,7 +32,7 @@ contract Adjudicator {
 		return state.length;
 	}
 
-	function getStateIndex(uint _index) constant returns (bytes32) {
+	function getStateAt(uint _index) constant returns (bytes32) {
 		return state[_index];
 	}
 
