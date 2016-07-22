@@ -46,7 +46,7 @@ contract Adjudicator {
 	}
 
 	function unfreeze() external onlyOwner returns (bool) {
-		if (frozen && nonce < UINT_MAX) {
+		if (frozen && nonce != UINT_MAX) {
 			lastTimestamp = 0;
 			frozen = false;
 			return true;
@@ -56,7 +56,7 @@ contract Adjudicator {
 	}
 
 	function finalize() external notFrozen returns (bool) {
-		if (nonce == UINT_MAX || (lastTimestamp > 0 && now > lastTimestamp + timeout)) {
+		if (nonce == UINT_MAX || (lastTimestamp != 0 && now > lastTimestamp + timeout)) {
 			frozen = true;
 			return true;
 		} else {
