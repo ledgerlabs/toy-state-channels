@@ -1,6 +1,6 @@
 import "BulletinBoard.sol";
 
-contract UniversalConsent {
+contract UnanimousConsent {
 
 	enum ConsentState {
 		NONE,
