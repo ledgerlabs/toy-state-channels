@@ -1,5 +1,3 @@
-import "Rules.sol";
-
 contract Adjudicator {
 
 	bool public frozen = false;
@@ -25,15 +23,6 @@ contract Adjudicator {
 		}
 	}
 
-	modifier nonceUpdate(uint _newNonce) {
-		if (_newNonce > nonce) {
-			nonce = _newNonce;
-			_
-		} else {
-			throw;
-		}
-	}
-
 	function Adjudicator(address _owner, uint _timeout) {
 		owner = _owner;
 		timeout = _timeout;
@@ -51,24 +40,14 @@ contract Adjudicator {
 		external
 		onlyOwner
 		notFrozen
-		nonceUpdate(_newNonce)
+		returns (bool)
 	{
-		state = _state;
-	}
-
-	function appeal(uint _newNonce, Rules _rules, bytes4 _methodSignature, bytes32[] _arguments)
-		external
-		onlyOwner
-		notFrozen
-		nonceUpdate(_newNonce)
-	{
-		if (!_rules.call(_methodSignature, _arguments)) {
-			throw;
-		}
-
-		state.length = _rules.getDecidedStateLength();
-		for (uint i = 0; i < state.length; i++) {
-			state[i] = _rules.getDecidedStateAt(i);
+		if (_newNonce > nonce) {
+			nonce = _newNonce;
+			state = _state;
+			return true;
+		} else {
+			return false;
 		}
 	}
 
