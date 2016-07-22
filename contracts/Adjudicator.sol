@@ -1,5 +1,7 @@
 contract Adjudicator {
 
+	uint constant UINT_MAX = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
+
 	bool public frozen = false;
 	uint nonce = 0;
 	uint lastTimestamp = 0;
@@ -43,12 +45,8 @@ contract Adjudicator {
 		}
 	}
 
-	function giveConsent() external onlyOwner notFrozen {
-		frozen = true;
-	}
-
 	function finalize() external notFrozen returns (bool) {
-		if (lastTimestamp > 0 && now > lastTimestamp + timeout) {
+		if (nonce == UINT_MAX || (lastTimestamp > 0 && now > lastTimestamp + timeout)) {
 			frozen = true;
 			return true;
 		} else {
