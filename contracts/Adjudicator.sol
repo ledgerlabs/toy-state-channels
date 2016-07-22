@@ -25,6 +25,15 @@ contract Adjudicator {
 		}
 	}
 
+	modifier nonceUpdate(uint _newNonce) {
+		if (_newNonce > nonce) {
+			nonce = _newNonce;
+			_
+		} else {
+			throw;
+		}
+	}
+
 	function Adjudicator(address _owner, uint _timeout) {
 		owner = _owner;
 		timeout = _timeout;
@@ -38,11 +47,21 @@ contract Adjudicator {
 		return state[_index];
 	}
 
-	function submit(bytes32[] _state) external onlyOwner notFrozen {
+	function submit(uint _newNonce, bytes32[] _state)
+		external
+		onlyOwner
+		notFrozen
+		nonceUpdate(_newNonce)
+	{
 		state = _state;
 	}
 
-	function appeal(Rules _rules, bytes4 _methodSignature, bytes32[] _arguments) external onlyOwner notFrozen {
+	function appeal(uint _newNonce, Rules _rules, bytes4 _methodSignature, bytes32[] _arguments)
+		external
+		onlyOwner
+		notFrozen
+		nonceUpdate(_newNonce)
+	{
 		if (!_rules.call(_methodSignature, _arguments)) {
 			throw;
 		}
