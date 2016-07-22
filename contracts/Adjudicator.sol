@@ -5,7 +5,7 @@ contract Adjudicator {
 	uint lastTimestamp = 0;
 	address owner;
 	uint timeout;
-	bytes32[] state;
+	bytes32 public stateHash;
 
 	modifier onlyOwner {
 		if (msg.sender == owner) {
@@ -28,15 +28,7 @@ contract Adjudicator {
 		timeout = _timeout;
 	}
 
-	function getStateLength() constant returns (uint) {
-		return state.length;
-	}
-
-	function getStateAt(uint _index) constant returns (bytes32) {
-		return state[_index];
-	}
-
-	function submit(uint _newNonce, bytes32[] _state)
+	function submit(uint _newNonce, bytes32 _stateHash)
 		external
 		onlyOwner
 		notFrozen
@@ -44,7 +36,7 @@ contract Adjudicator {
 	{
 		if (_newNonce > nonce) {
 			nonce = _newNonce;
-			state = _state;
+			stateHash = _stateHash;
 			return true;
 		} else {
 			return false;
