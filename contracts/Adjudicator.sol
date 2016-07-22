@@ -1,13 +1,13 @@
-import "Rules.sol";
-
 contract Adjudicator {
+
+	uint public constant UINT_MAX = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
 	bool public frozen = false;
 	uint nonce = 0;
 	uint lastTimestamp = 0;
 	address owner;
 	uint timeout;
-	bytes32[] state;
+	bytes32 public stateHash;
 
 	modifier onlyOwner {
 		if (msg.sender == owner) {
@@ -30,35 +30,33 @@ contract Adjudicator {
 		timeout = _timeout;
 	}
 
-	function getStateLength() constant returns (uint) {
-		return state.length;
-	}
-
-	function getStateAt(uint _index) constant returns (bytes32) {
-		return state[_index];
-	}
-
-	function submit(bytes32[] _state) external onlyOwner notFrozen {
-		state = _state;
-	}
-
-	function appeal(Rules _rules, bytes4 _methodSignature, bytes32[] _arguments) external onlyOwner notFrozen {
-		if (!_rules.call(_methodSignature, _arguments)) {
-			throw;
-		}
-
-		state.length = _rules.getDecidedStateLength();
-		for (uint i = 0; i < state.length; i++) {
-			state[i] = _rules.getDecidedStateAt(i);
+	function submit(uint _newNonce, bytes32 _stateHash)
+		external
+		onlyOwner
+		notFrozen
+		returns (bool)
+	{
+		if (_newNonce > nonce) {
+			nonce = _newNonce;
+			stateHash = _stateHash;
+			return true;
+		} else {
+			return false;
 		}
 	}
 
-	function giveConsent() external onlyOwner notFrozen {
-		frozen = true;
+	function unfreeze() external onlyOwner returns (bool) {
+		if (frozen && nonce != UINT_MAX) {
+			lastTimestamp = 0;
+			frozen = false;
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	function finalize() external notFrozen returns (bool) {
-		if (lastTimestamp > 0 && now > lastTimestamp + timeout) {
+		if (nonce == UINT_MAX || (lastTimestamp != 0 && now > lastTimestamp + timeout)) {
 			frozen = true;
 			return true;
 		} else {
