@@ -21,7 +21,7 @@ contract UnanimousConsent {
 		}
 	}
 
-	function StateChannel(address[] _participants) {
+	function UnanimousConsent(address[] _participants) {
 		participants = _participants;
 		bulletinBoard = new BulletinBoard(this);
 	}
