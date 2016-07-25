@@ -65,8 +65,13 @@ contract UnanimousConsent {
 		}
 	}
 
-	function consent(bytes32 _hash) {
-		consentStates[_hash][msg.sender] = ConsentState.CONSENTED;
+	function consent(bytes32 _hash) returns (bool) {
+		if (consentStates[_hash][msg.sender] == ConsentState.NONE) {
+			consentStates[_hash][msg.sender] = ConsentState.CONSENTED;
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	function sendEther(address _recipient, uint _amount) external onlySelf {
