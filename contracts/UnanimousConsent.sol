@@ -1,5 +1,9 @@
 import "BulletinBoard.sol";
 
+/**
+ * This contract performs an "eval" on arbitrary contracts but only with the
+ * consent of all participants named.
+ */
 contract UnanimousConsent {
 
 	enum ConsentState {
@@ -8,9 +12,14 @@ contract UnanimousConsent {
 		EXECUTED
 	}
 
+	// Records the current state of consent for a given hash and address
 	mapping (bytes32 =>
 			mapping (address => ConsentState)) consentStates;
+
+	// Holds all of the participants in the current UnanimousConsent contract
 	address[] participants;
+
+	// Holds the BulletinBoard for counterfactual addressing
 	BulletinBoard public bulletinBoard;
 
 	modifier onlySelf {
@@ -21,11 +30,25 @@ contract UnanimousConsent {
 		}
 	}
 
+	/**
+	 * Creates a new UnanimousConsent contract.
+	 *
+	 * _participants: The initial participants in the contract
+	 */
 	function UnanimousConsent(address[] _participants) {
 		participants = _participants;
 		bulletinBoard = new BulletinBoard(this);
 	}
 
+	/**
+	 * Evaluates arbitrary functions of contracts, but only with universal
+	 * consent.
+	 *
+	 * _calledContracts: The addresses of the called contracts
+	 * _methodSignatures: The method signatures of the functions
+	 * _argumentLengths: The lengths of the arguments for each function call
+	 * _arguments: The arguments of all function calls concatenated
+	 */
 	function eval(
 		address[] _calledContracts,
 		bytes4[] _methodSignatures,
@@ -65,20 +88,46 @@ contract UnanimousConsent {
 		}
 	}
 
+	/**
+	 * Provides consent for the hash of an execution call for the sender of the
+	 * message.
+	 *
+	 * _hash: The hash of the execution call
+	 */
 	function consent(bytes32 _hash) {
 		consentStates[_hash][msg.sender] = ConsentState.CONSENTED;
 	}
 
+	/**
+	 * Sends the Ether stored in the currenct contract. Intended to only be
+	 * called by this contract's `eval`.
+	 *
+	 * _recipient: The recipient of the Ether.
+	 * _amount: The amount of Ether to send.
+	 */
 	function sendEther(address _recipient, uint _amount) external onlySelf {
 		if (!_recipient.send(_amount)) {
 			throw;
 		}
 	}
 
+	/**
+	 * Changes the participants in the current contract. Intended to only be
+	 * called by this contract's `eval`.
+	 *
+	 * _participants: The new participants in the contract
+	 */
 	function changeParticipants(address[] _participants) external onlySelf {
 		participants = _participants;
 	}
 
+	/**
+	 * Cleans up previously approved consents. Intended to only be called by
+	 * this contract's `eval`.
+	 *
+	 * _hashes: The list of hashes to clean
+	 * _participants: The list of address whose hashes should be cleaned
+	 */
 	function clean(bytes32[] _hashes, address[] _participants) external onlySelf {
 		for (uint i = 0; i < _hashes.length; i++) {
 			for (uint j = 0; j < _participants.length; j++) {
@@ -87,6 +136,12 @@ contract UnanimousConsent {
 		}
 	}
 
+	/**
+	 * Kills the current contract. Intended to only be called by this contract's
+	 * eval.
+	 *
+	 * _recipient: The recipient of funds from the `selfdestruct` call
+	 */
 	function kill(address _recipient) external onlySelf {
 		selfdestruct(_recipient);
 	}
