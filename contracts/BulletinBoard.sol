@@ -35,4 +35,13 @@ contract BulletinBoard {
 	function updateRegistry(bytes32 _key, address _value) onlyOwner {
 		registry[_key] = _value;
 	}
+
+	/**
+	 * Kills the current contract.
+	 *
+	 * _recipient: The recipient of funds from the `selfdestruct` call
+	 */
+	function kill(address _recipient) external onlyOwner {
+		selfdestruct(_recipient);
+	}
 }
