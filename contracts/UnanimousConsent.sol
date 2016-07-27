@@ -42,7 +42,10 @@ contract UnanimousConsent {
 
 	/**
 	 * Evaluates arbitrary functions of contracts, but only with universal
-	 * consent.
+	 * consent. Note that any `eval` sub-calls should `throw` in the event that
+	 * there is a contract execution failure (such as if a precondition isn't
+	 * met or if a verification of some sort fails) to prevent this call from
+	 * finishing.
 	 *
 	 * _calledContracts: The addresses of the called contracts
 	 * _methodSignatures: The method signatures of the functions
