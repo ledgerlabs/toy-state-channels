@@ -76,12 +76,12 @@ contract Adjudicator {
 	}
 
 	/**
-	 * Unfreezes the contract only if the the contract is frozen.
+	 * Unfreezes the contract and prevents last sent state from being frozen.
 	 *
 	 * returns: `true` if successful, otherwise `false`
 	 */
 	function unfreeze() external onlyOwner returns (bool) {
-		if (frozen && nonce != UINT_MAX) {
+		if (nonce != UINT_MAX) {
 			lastTimestamp = 0;
 			frozen = false;
 			return true;
