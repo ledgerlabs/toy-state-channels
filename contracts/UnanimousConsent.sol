@@ -1,4 +1,4 @@
-lastesimport "BulletinBoard.sol";
+import "BulletinBoard.sol";
 
 /**
  * This contract performs an "eval" on arbitrary contracts but only with the
