@@ -51,23 +51,26 @@ contract UnanimousConsent {
 	 * _methodSignatures: The method signatures of the functions
 	 * _argumentLengths: The lengths of the arguments for each function call
 	 * _arguments: The arguments of all function calls concatenated
+	 * _values: Amount of Ether to send for each respective call
 	 */
 	function eval(
 		address[] _calledContracts,
 		bytes4[] _methodSignatures,
 		uint[] _argumentLengths,
-		bytes32[] _arguments
+		bytes32[] _arguments,
+		uint[] _values
 	) {
 		if (
 			_calledContracts.length != _methodSignatures.length ||
-			_calledContracts.length != _argumentLengths.length
+			_calledContracts.length != _argumentLengths.length ||
+			_calledContracts.length != _values.length
 		) {
 			throw;
 		}
 
 		uint i;
 		uint j;
-		bytes32 hash = sha3(_calledContracts, _methodSignatures, _argumentLengths, _arguments);
+		bytes32 hash = sha3(_calledContracts, _methodSignatures, _argumentLengths, _arguments, _values);
 
 		for (i = 0; i < participants.length; i++) {
 			if (consentStates[hash][participants[i]] == ConsentState.CONSENTED) {
@@ -85,7 +88,7 @@ contract UnanimousConsent {
 				arguments[j] = _arguments[argumentsIndex++];
 			}
 
-			if (!_calledContracts[i].call(_methodSignatures[i], arguments[i])) {
+			if (!_calledContracts[i].call.value(_values[i])(_methodSignatures[i], arguments[i])) {
 				throw;
 			}
 		}
