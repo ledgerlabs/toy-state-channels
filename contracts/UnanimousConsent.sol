@@ -52,28 +52,25 @@ contract UnanimousConsent {
 	 * _argumentLengths: The lengths of the arguments for each function call
 	 * _arguments: The arguments of all function calls concatenated
 	 * _values: Amount of Ether to send for each respective call
-	 * _gases: Amount of gas to put into the call, 0 means unbounded usage
 	 */
 	function eval(
 		address[] _calledContracts,
 		bytes4[] _methodSignatures,
 		uint[] _argumentLengths,
 		bytes32[] _arguments,
-		uint[] _values,
-		uint[] _gases
+		uint[] _values
 	) {
 		if (
 			_calledContracts.length != _methodSignatures.length ||
 			_calledContracts.length != _argumentLengths.length ||
-			_calledContracts.length != _values.length ||
-			_calledContracts.length != _gases.length
+			_calledContracts.length != _values.length
 		) {
 			throw;
 		}
 
 		uint i;
 		uint j;
-		bytes32 hash = sha3(_calledContracts, _methodSignatures, _argumentLengths, _arguments, _values, _gases);
+		bytes32 hash = sha3(_calledContracts, _methodSignatures, _argumentLengths, _arguments, _values);
 
 		for (i = 0; i < participants.length; i++) {
 			if (consentStates[hash][participants[i]] == ConsentState.CONSENTED) {
@@ -91,14 +88,8 @@ contract UnanimousConsent {
 				arguments[j] = _arguments[argumentsIndex++];
 			}
 
-			if (_gases[i] == 0) {
-				if (!_calledContracts[i].call.value(_values[i])(_methodSignatures[i], arguments[i])) {
-					throw;
-				}
-			} else {
-				if (!_calledContracts[i].call.value(_values[i]).gas(_gases[i])(_methodSignatures[i], arguments[i])) {
-					throw;
-				}
+			if (!_calledContracts[i].call.value(_values[i])(_methodSignatures[i], arguments[i])) {
+				throw;
 			}
 		}
 	}
