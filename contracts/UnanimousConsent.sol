@@ -12,9 +12,19 @@ contract UnanimousConsent {
 		EXECUTED
 	}
 
+	struct Action {
+		address target;
+		uint value;
+		bytes calldata;
+		bool initialized;
+	}
+
 	// Records the current state of consent for a given hash and address
 	mapping (bytes32 =>
 			mapping (address => ConsentState)) consentStates;
+
+	// TODO Document this
+	mapping (bytes32 => Action) actions;
 
 	// Holds all of the participants in the current UnanimousConsent contract
 	address[] participants;
@@ -40,6 +50,17 @@ contract UnanimousConsent {
 		bulletinBoard = new BulletinBoard(this);
 	}
 
+	// TODO Document this
+	function addAction(address _target, uint _value, bytes _calldata) external {
+		Action memory action = Action(_target, _value, _calldata, true);
+		actions[sha3(action)] = action;// hashing a struct is broken
+	}
+
+	// TODO Document this
+	function removeAction(bytes32 _actionHash) external onlySelf {
+		delete actions[_actionHash];
+	}
+
 	/**
 	 * Evaluates arbitrary functions of contracts, but only with universal
 	 * consent. Note that any `eval` sub-calls should `throw` in the event that
@@ -47,30 +68,11 @@ contract UnanimousConsent {
 	 * met or if a verification of some sort fails) to prevent this call from
 	 * finishing.
 	 *
-	 * _calledContracts: The addresses of the called contracts
-	 * _methodSignatures: The method signatures of the functions
-	 * _argumentLengths: The lengths of the arguments for each function call
-	 * _arguments: The arguments of all function calls concatenated
-	 * _values: Amount of Ether to send for each respective call
+	 * TODO: Fix this
 	 */
-	function eval(
-		address[] _calledContracts,
-		bytes4[] _methodSignatures,
-		uint[] _argumentLengths,
-		bytes32[] _arguments,
-		uint[] _values
-	) {
-		if (
-			_calledContracts.length != _methodSignatures.length ||
-			_calledContracts.length != _argumentLengths.length ||
-			_calledContracts.length != _values.length
-		) {
-			throw;
-		}
-
+	function eval(bytes32[] _actionHashes) {
 		uint i;
-		uint j;
-		bytes32 hash = sha3(_calledContracts, _methodSignatures, _argumentLengths, _arguments, _values);
+		bytes32 hash = sha3(_actionHashes);
 
 		for (i = 0; i < participants.length; i++) {
 			if (consentStates[hash][participants[i]] == ConsentState.CONSENTED) {
@@ -80,15 +82,9 @@ contract UnanimousConsent {
 			}
 		}
 
-		uint argumentsIndex = 0;
-		for (i = 0; i < _calledContracts.length; i++) {
-
-			bytes32[] memory arguments = new bytes32[](_argumentLengths[i]);
-			for (j = 0; j < _argumentLengths[i]; j++) {
-				arguments[j] = _arguments[argumentsIndex++];
-			}
-
-			if (!_calledContracts[i].call.value(_values[i])(_methodSignatures[i], arguments[i])) {
+		for (i = 0; i < _actionHashes.length; i++) {
+			Action memory action = actions[_actionHashes[i]];
+			if (action.initialized && !action.target.call.value(action.value)(action.calldata)) {
 				throw;
 			}
 		}
