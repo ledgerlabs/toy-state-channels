@@ -75,9 +75,9 @@ contract UnanimousConsent {
 		uint i;
 		bytes32 hash = sha3(_actionHashes);
 
-		for (i = 0; i < participants.length; i++) {
-			if (consentStates[hash][participants[i]] == ConsentState.CONSENTED) {
-				consentStates[hash][participants[i]] = ConsentState.EXECUTED;
+		for (i = participants.length; i > 0; i--) {
+			if (consentStates[hash][participants[i-1]] == ConsentState.CONSENTED) {
+				consentStates[hash][participants[i-1]] = ConsentState.EXECUTED;
 			} else {
 				throw;
 			}
@@ -125,8 +125,8 @@ contract UnanimousConsent {
 	 * _actionHashes: The hashes of the `Action` that have been submitted
 	 */
 	function cleanActions(bytes32[] _actionHashes) external onlySelf {
-		for (uint i = 0; i < _actionHash.length; i++) {
-			delete actions[_actionHashes[i]];
+		for (uint i = _actionHash.length; i > 0; i--) {
+			delete actions[_actionHashes[i-1]];
 		}
 	}
 
@@ -138,9 +138,9 @@ contract UnanimousConsent {
 	 * _participants: The list of address whose hashes should be cleaned
 	 */
 	function clean(bytes32[] _hashes, address[] _participants) external onlySelf {
-		for (uint i = 0; i < _hashes.length; i++) {
-			for (uint j = 0; j < _participants.length; j++) {
-				delete consentStates[_hashes[i]][_participants[j]];
+		for (uint i = _hashes.length; i > 0; i--) {
+			for (uint j = _participants.length; j > 0; j--) {
+				delete consentStates[_hashes[i-1]][_participants[j-1]];
 			}
 		}
 	}
