@@ -57,8 +57,10 @@ contract UnanimousConsent {
 	}
 
 	// TODO Document this
-	function removeAction(bytes32 _actionHash) external onlySelf {
-		delete actions[_actionHash];
+	function cleanActions(bytes32[] _actionHashes) external onlySelf {
+		for (uint i = 0; i < _actionHash.length; i++) {
+			delete actions[_actionHashes[i]];
+		}
 	}
 
 	/**
