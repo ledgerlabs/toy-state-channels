@@ -110,19 +110,6 @@ contract UnanimousConsent {
 	}
 
 	/**
-	 * Sends the Ether stored in the currenct contract. Intended to only be
-	 * called by this contract's `eval`.
-	 *
-	 * _recipient: The recipient of the Ether.
-	 * _amount: The amount of Ether to send.
-	 */
-	function sendEther(address _recipient, uint _amount) external onlySelf {
-		if (!_recipient.send(_amount)) {
-			throw;
-		}
-	}
-
-	/**
 	 * Changes the participants in the current contract. Intended to only be
 	 * called by this contract's `eval`.
 	 *
