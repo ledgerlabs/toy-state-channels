@@ -63,18 +63,6 @@ contract UnanimousConsent {
 	}
 
 	/**
-	 * Removes a group of `Action` that have been submitted. Intended to be
-	 * called by this contract's `eval`.
-	 *
-	 * _actionHashes: The hashes of the `Action` that have been submitted
-	 */
-	function cleanActions(bytes32[] _actionHashes) external onlySelf {
-		for (uint i = 0; i < _actionHash.length; i++) {
-			delete actions[_actionHashes[i]];
-		}
-	}
-
-	/**
 	 * Evaluates arbitrary functions of contracts, but only with universal
 	 * consent. Note that any `eval` sub-calls should `throw` in the event that
 	 * there is a contract execution failure (such as if a precondition isn't
@@ -128,6 +116,18 @@ contract UnanimousConsent {
 	 */
 	function changeParticipants(address[] _participants) external onlySelf {
 		participants = _participants;
+	}
+
+	/**
+	 * Removes a group of `Action` that have been submitted. Intended to be
+	 * called by this contract's `eval`.
+	 *
+	 * _actionHashes: The hashes of the `Action` that have been submitted
+	 */
+	function cleanActions(bytes32[] _actionHashes) external onlySelf {
+		for (uint i = 0; i < _actionHash.length; i++) {
+			delete actions[_actionHashes[i]];
+		}
 	}
 
 	/**
