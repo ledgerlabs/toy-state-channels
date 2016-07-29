@@ -23,7 +23,7 @@ contract UnanimousConsent {
 	mapping (bytes32 =>
 			mapping (address => ConsentState)) consentStates;
 
-	// TODO Document this
+	// Contains all of the sent execution actions
 	mapping (bytes32 => Action) actions;
 
 	// Holds all of the participants in the current UnanimousConsent contract
@@ -50,13 +50,24 @@ contract UnanimousConsent {
 		bulletinBoard = new BulletinBoard(this);
 	}
 
-	// TODO Document this
+	/**
+	 * Adds an `Action` to potentially be executed.
+	 *
+	 * _target: The target of the execution call
+	 * _value: The amount of Ether to send
+	 * _calldata: The calldata associated with the call
+	 */
 	function addAction(address _target, uint _value, bytes _calldata) external {
 		Action memory action = Action(_target, _value, _calldata, true);
 		actions[sha3(action)] = action;// hashing a struct is broken
 	}
 
-	// TODO Document this
+	/**
+	 * Removes a group of `Action` that have been submitted. Intended to be
+	 * called by this contract's `eval`.
+	 *
+	 * _actionHashes: The hashes of the `Action` that have been submitted
+	 */
 	function cleanActions(bytes32[] _actionHashes) external onlySelf {
 		for (uint i = 0; i < _actionHash.length; i++) {
 			delete actions[_actionHashes[i]];
@@ -70,7 +81,7 @@ contract UnanimousConsent {
 	 * met or if a verification of some sort fails) to prevent this call from
 	 * finishing.
 	 *
-	 * TODO: Fix this
+	 * _actionHashes: The hashes of the `Action` that have been submitted
 	 */
 	function eval(bytes32[] _actionHashes) {
 		uint i;
