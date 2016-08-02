@@ -1,7 +1,7 @@
 # Toy State Channels
 
-**WARNING: This code is a *toy* implementation designed for educational and
-explanatory purposes only and is *not safe* for production use.**  Numerous key
+**WARNING: This code is a TOY implementation designed for educational and
+explanatory purposes only and is NOT SAFE for production use.**  Numerous key
 safety features have been left purposely unimplemented for the sake of
 readability and brevity.
 
