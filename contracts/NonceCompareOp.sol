@@ -15,7 +15,7 @@ contract NonceCompareOp is CompareOp {
 	 *
 	 * returns: The nonce associated with the state
 	 */
-	function getNonce(bytes32[] _state) constant internal returns (uint) {
+	function getNonce(bytes32[] _state) constant returns (uint) {
 		if (_state.length < 1) {
 			throw;
 		} else {
