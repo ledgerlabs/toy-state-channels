@@ -7,7 +7,7 @@ contract Adjudicator {
 	CompareOp compareOp;
 	address owner;
 	uint timeout;
-	bytes state;
+	bytes32[] state;
 
 	modifier onlyOwner {
 		if (msg.sender == owner) {
@@ -31,7 +31,7 @@ contract Adjudicator {
 		timeout = _timeout;
 	}
 
-	function submit(bytes _state)
+	function submit(bytes32[] _state)
 		external
 		onlyOwner
 		notFrozen
