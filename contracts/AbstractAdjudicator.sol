@@ -7,7 +7,7 @@ contract AbstractAdjudicator {
 	uint lastTimestamp = 0;
 	address owner;
 	uint timeout;
-	bytes32 public stateHash;
+	bytes state;
 
 	modifier onlyOwner {
 		if (msg.sender == owner) {
@@ -30,7 +30,7 @@ contract AbstractAdjudicator {
 		timeout = _timeout;
 	}
 
-	function submit(uint _newNonce, bytes32 _stateHash)
+	function submit(uint _newNonce, bytes _state)
 		external
 		onlyOwner
 		notFrozen
@@ -38,7 +38,7 @@ contract AbstractAdjudicator {
 	{
 		if (_newNonce > nonce) {
 			nonce = _newNonce;
-			stateHash = _stateHash;
+			state = _state;
 			return true;
 		} else {
 			return false;
