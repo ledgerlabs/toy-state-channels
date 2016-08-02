@@ -1,10 +1,10 @@
+import "CompareOp.sol";
+
 contract Adjudicator {
 
-	uint public constant UINT_MAX = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
-
 	bool public frozen = false;
-	uint nonce = 0;
 	uint lastTimestamp = 0;
+	CompareOp compareOp;
 	address owner;
 	uint timeout;
 	bytes state;
@@ -25,19 +25,19 @@ contract Adjudicator {
 		}
 	}
 
-	function Adjudicator(address _owner, uint _timeout) {
+	function Adjudicator(CompareOp _compareOp, address _owner, uint _timeout) {
+		compareOp = _compareOp;
 		owner = _owner;
 		timeout = _timeout;
 	}
 
-	function submit(uint _newNonce, bytes _state)
+	function submit(bytes _state)
 		external
 		onlyOwner
 		notFrozen
 		returns (bool)
 	{
-		if (_newNonce > nonce) {
-			nonce = _newNonce;
+		if (compareOp.isSuperior(state, _state) {
 			state = _state;
 			return true;
 		} else {
@@ -46,7 +46,7 @@ contract Adjudicator {
 	}
 
 	function unfreeze() external onlyOwner returns (bool) {
-		if (frozen && nonce != UINT_MAX) {
+		if (frozen && !CompareOp.isFinal(state)) {
 			lastTimestamp = 0;
 			frozen = false;
 			return true;
@@ -56,7 +56,7 @@ contract Adjudicator {
 	}
 
 	function finalize() external notFrozen returns (bool) {
-		if (nonce == UINT_MAX || (lastTimestamp != 0 && now > lastTimestamp + timeout)) {
+		if (CompareOp.isFinal(state) || (lastTimestamp != 0 && now > lastTimestamp + timeout)) {
 			frozen = true;
 			return true;
 		} else {
