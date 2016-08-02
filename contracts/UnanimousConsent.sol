@@ -125,7 +125,7 @@ contract UnanimousConsent {
 	 * _actionHashes: The hashes of the `Action` that have been submitted
 	 */
 	function cleanActions(bytes32[] _actionHashes) external onlySelf {
-		for (uint i = _actionHash.length; i > 0; i--) {
+		for (uint i = _actionHashes.length; i > 0; i--) {
 			delete actions[_actionHashes[i-1]];
 		}
 	}
