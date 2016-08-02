@@ -37,7 +37,7 @@ contract Adjudicator {
 		notFrozen
 		returns (bool)
 	{
-		if (compareOp.isSuperior(state, _state) {
+		if (compareOp.isSuperior(_state, state) {
 			state = _state;
 			return true;
 		} else {
