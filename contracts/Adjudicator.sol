@@ -1,4 +1,4 @@
-contract AbstractAdjudicator {
+contract Adjudicator {
 
 	uint public constant UINT_MAX = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
@@ -25,7 +25,7 @@ contract AbstractAdjudicator {
 		}
 	}
 
-	function AbstractAdjudicator(address _owner, uint _timeout) {
+	function Adjudicator(address _owner, uint _timeout) {
 		owner = _owner;
 		timeout = _timeout;
 	}
