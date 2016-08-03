@@ -37,7 +37,7 @@ contract Adjudicator {
 		notFrozen
 		returns (bool)
 	{
-		if (compareOp.isSuperior(_state, state) {
+		if (compareOp.isSuperior(_state, state)) {
 			state = _state;
 			return true;
 		} else {
@@ -46,7 +46,7 @@ contract Adjudicator {
 	}
 
 	function unfreeze() external onlyOwner returns (bool) {
-		if (frozen && !CompareOp.isFinal(state)) {
+		if (frozen && !compareOp.isFinal(state)) {
 			lastTimestamp = 0;
 			frozen = false;
 			return true;
@@ -56,7 +56,7 @@ contract Adjudicator {
 	}
 
 	function finalize() external notFrozen returns (bool) {
-		if (CompareOp.isFinal(state) || (lastTimestamp != 0 && now > lastTimestamp + timeout)) {
+		if (compareOp.isFinal(state) || (lastTimestamp != 0 && now > lastTimestamp + timeout)) {
 			frozen = true;
 			return true;
 		} else {
