@@ -1,20 +1,19 @@
+import "CompareOp.sol";
+
 /**
  * This contract ensures that the latest signed state between some parties is
  * revealed. This solves the data availability contest problem.
  */
 contract Adjudicator {
 
-	// The maximum integer value that can be stored in an uint256 (uint)
-	uint public constant UINT_MAX = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
-
 	// Whether the state has been frozen or not
 	bool public frozen = false;
 
-	// The current nonce of the state
-	uint nonce = 0;
-
 	// The timestamp of the last state sent
 	uint lastTimestamp = 0;
+
+	// The CompareOp which will be used to validate states
+	CompareOp compareOp;
 
 	// The address of the owner of this contract
 	address owner;
@@ -22,8 +21,8 @@ contract Adjudicator {
 	// The timeout period before this contract can be frozen
 	uint timeout;
 
-	// The last hash of the latest state
-	bytes32 public stateHash;
+	// The newest state sent
+	bytes32[] state;
 
 	modifier onlyOwner {
 		if (msg.sender == owner) {
@@ -44,31 +43,31 @@ contract Adjudicator {
 	/**
 	 * Creates a new Adjudicator contract.
 	 *
+	 * _compareOp: The CompareOp which will be used to validate states
 	 * _owner: The owner of this contract
 	 * _timeout: The timeout period before this contract can be frozen
 	 */
-	function Adjudicator(address _owner, uint _timeout) {
+	function Adjudicator(CompareOp _compareOp, address _owner, uint _timeout) {
+		compareOp = _compareOp;
 		owner = _owner;
 		timeout = _timeout;
 	}
 
 	/**
-	 * Submits a potential hash of state into this contract.
+	 * Submits a state into this contract.
 	 *
-	 * _newNonce: The nonce of the new state
-	 * _stateHash: The hash of the latest state
+	 * _state: The state to be submitted
 	 *
 	 * returns: `true` if sucessful, otherwise `false`
 	 */
-	function submit(uint _newNonce, bytes32 _stateHash)
+	function submit(bytes32[] _state)
 		external
 		onlyOwner
 		notFrozen
 		returns (bool)
 	{
-		if (_newNonce > nonce) {
-			nonce = _newNonce;
-			stateHash = _stateHash;
+		if (compareOp.isSuperior(_state, state)) {
+			state = _state;
 			return true;
 		} else {
 			return false;
@@ -81,7 +80,7 @@ contract Adjudicator {
 	 * returns: `true` if successful, otherwise `false`
 	 */
 	function unfreeze() external onlyOwner returns (bool) {
-		if (nonce != UINT_MAX) {
+		if (!compareOp.isFinal(state)) {
 			lastTimestamp = 0;
 			frozen = false;
 			return true;
@@ -97,7 +96,7 @@ contract Adjudicator {
 	 * returns: `true` if successful, otherwise `false`
 	 */
 	function finalize() external notFrozen returns (bool) {
-		if (nonce == UINT_MAX || (lastTimestamp != 0 && now > lastTimestamp + timeout)) {
+		if (compareOp.isFinal(state) || (lastTimestamp != 0 && now > lastTimestamp + timeout)) {
 			frozen = true;
 			return true;
 		} else {
