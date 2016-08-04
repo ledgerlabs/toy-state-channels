@@ -1,0 +1,34 @@
+<html>
+	<head>
+		<title> TESTING ZONE </title>
+		<link rel="shortcut icon" href="/favicon.png" />
+		<link rel="stylesheet" type="text/css" href="/styles.css" />
+		<script src="https://code.jquery.com/jquery-3.0.0.min.js" integrity="sha256-JmvOoLtYsmqlsWxa7mDSLMwa6dZ9rrIdtrrVYRnDRH0=" crossorigin="anonymous"></script>
+		<script src="/web3.js/dist/web3.min.js"></script>
+		<script src="/constants.js"></script>
+		<script src="/tests.js"></script>
+		<script src="/ToyStateChannel.js"></script>
+	</head>
+	<body>
+		<img src="/testingZone.png"/>
+		<h1> Toy State Channels </h1>
+		<form>
+			<h3> Getting Started </h3>
+			<p> How many people would you like to create a state channel with (including you)? </p>
+			<input type="number" name="numParticipants" class="text" min="1" />
+			<input type="button" value="Create" name="create" class="button" onclick="address(this.form)" />
+			<br>
+			<p> Or enter the address of an already existing state channel and attach to it </p>
+			<input type="text" name="attachAddress" class="text" >
+			<input type="button" value="Attach" name="attach" class="button" onclick="attachToContract(this.form)" />
+		</form>
+		
+		<form>
+			<h3> Signing Transactions </h3>
+		</form>
+		
+		<form>
+			<h3> Executing Transactions </h3>
+		</form>
+	</body>
+</html>
