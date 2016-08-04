@@ -1,0 +1,39 @@
+body {
+	background-color: #ffccdd;
+	font-family: words;
+}
+
+img {
+	display: block;
+	margin: auto;
+	width: 100px;
+	height: 80px;
+}
+
+form {
+	text-align: center;
+}
+
+h1 {
+	font-size: 40px;
+	text-align: center;
+}
+
+.text {
+	font-family: words;
+}
+
+.button {
+	background-color: #cce6ff;
+	border: none;
+	font-family: words;
+}
+
+.button:hover {
+	background-color: #3399ff;
+}
+
+@font-face {
+	font-family: words;
+	src: url(Quicksand-Regular.otf);
+}
