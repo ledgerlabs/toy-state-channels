@@ -1,7 +1,15 @@
 import "Rules.sol";
 
 contract RulesFactory {
-	function createRules() returns (Rules) {
-		return new Rules();
+
+	Rules lastRules;
+
+	function getLastCreatedRules() returns (Rules returnedRules) {
+		if (lastRules != 0) {
+			returnedRules = lastRules;
+			lastRules = 0;
+		} else {
+			throw;
+		}
 	}
 }
