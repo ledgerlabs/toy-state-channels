@@ -1,4 +1,6 @@
 import "CompareOp.sol";
+import "RulesFactory.sol";
+import "Rules.sol";
 
 /**
  * This contract ensures that the latest signed state between some parties is
@@ -24,6 +26,11 @@ contract Adjudicator {
 	// The newest state sent
 	bytes32[] state;
 
+	Rules rules;
+
+	RulesFactory rulesFactory;
+	bytes constructorArguments;
+
 	modifier onlyOwner {
 		if (msg.sender == owner) {
 			_
@@ -47,10 +54,12 @@ contract Adjudicator {
 	 * _owner: The owner of this contract
 	 * _timeout: The timeout period before this contract can be frozen
 	 */
-	function Adjudicator(CompareOp _compareOp, address _owner, uint _timeout) {
+	function Adjudicator(CompareOp _compareOp, address _owner, uint _timeout, RulesFactory _rulesFactory, bytes _constructorArguments) {
 		compareOp = _compareOp;
 		owner = _owner;
 		timeout = _timeout;
+		rulesFactory = _rulesFactory;
+		constructorArguments = _constructorArguments;
 	}
 
 	/**
@@ -72,6 +81,22 @@ contract Adjudicator {
 		} else {
 			return false;
 		}
+	}
+
+	function dispute(bytes32[] _externalState)
+		external
+		onlyOwner
+		notFrozen
+		returns (bool)
+	{
+		if (rules == 0) {
+			if (rulesFactory.call(constructorArguments)) {
+				rules = rulesFactory.getLastCreatedRules();
+			} else {
+				throw;
+			}
+		}
+		// call rules here
 	}
 
 	/**
