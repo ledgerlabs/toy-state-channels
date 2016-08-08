@@ -59,7 +59,7 @@ contract UnanimousConsent {
 	 */
 	function addAction(address _target, uint _value, bytes _calldata) external {
 		Action memory action = Action(_target, _value, _calldata, true);
-		actions[sha3(action)] = action;// hashing a struct is broken
+		actions[sha3(_target, _value, _calldata)] = action;
 	}
 
 	/**
