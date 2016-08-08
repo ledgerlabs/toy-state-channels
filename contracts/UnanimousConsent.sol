@@ -85,7 +85,7 @@ contract UnanimousConsent {
 
 		for (i = 0; i < _actionHashes.length; i++) {
 			Action memory action = actions[_actionHashes[i]];
-			if (action.initialized && !action.target.call.value(action.value)(action.calldata)) {
+			if (!(action.initialized && action.target.call.value(action.value)(action.calldata))) {
 				throw;
 			}
 		}
