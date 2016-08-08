@@ -15,11 +15,11 @@ contract NonceCompareOp is CompareOp {
 	 *
 	 * returns: The nonce associated with the state
 	 */
-	function getNonce(bytes32[] _state) constant returns (uint) {
-		if (_state.length < 1) {
+	function getNonce(bytes _state) constant returns (uint returned) {
+		if (_state.length < 32) {
 			throw;
 		} else {
-			return uint(_state[0]);
+			assembly { returned := mload(add(_state, 32)) }
 		}
 	}
 
@@ -31,7 +31,7 @@ contract NonceCompareOp is CompareOp {
 	 *
 	 * returns: `true` iff the new state's nonce is greater, `false` otherwise
 	 */
-	function isSuperior(bytes32[] _new, bytes32[] _old) constant returns (bool) {
+	function isSuperior(bytes _new, bytes _old) constant returns (bool) {
 		return getNonce(_new) > getNonce(_old);
 	}
 
@@ -42,7 +42,7 @@ contract NonceCompareOp is CompareOp {
 	 *
 	 * returns: `true` iff the nonce is UINT_MAX, `false` otherwise
 	 */
-	function isFinal(bytes32[] _state) constant returns (bool) {
+	function isFinal(bytes _state) constant returns (bool) {
 		return getNonce(_state) == UINT_MAX;
 	}
 }
