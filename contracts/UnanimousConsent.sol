@@ -12,9 +12,19 @@ contract UnanimousConsent {
 		EXECUTED
 	}
 
+	struct Action {
+		address target;
+		uint value;
+		bytes calldata;
+		bool initialized;
+	}
+
 	// Records the current state of consent for a given hash and address
 	mapping (bytes32 =>
 			mapping (address => ConsentState)) consentStates;
+
+	// Contains all of the sent execution actions
+	mapping (bytes32 => Action) actions;
 
 	// Holds all of the participants in the current UnanimousConsent contract
 	address[] participants;
@@ -41,54 +51,41 @@ contract UnanimousConsent {
 	}
 
 	/**
+	 * Adds an `Action` to potentially be executed.
+	 *
+	 * _target: The target of the execution call
+	 * _value: The amount of Ether to send
+	 * _calldata: The calldata associated with the call
+	 */
+	function addAction(address _target, uint _value, bytes _calldata) external {
+		Action memory action = Action(_target, _value, _calldata, true);
+		actions[sha3(_target, _value, _calldata)] = action;
+	}
+
+	/**
 	 * Evaluates arbitrary functions of contracts, but only with universal
 	 * consent. Note that any `eval` sub-calls should `throw` in the event that
 	 * there is a contract execution failure (such as if a precondition isn't
 	 * met or if a verification of some sort fails) to prevent this call from
 	 * finishing.
 	 *
-	 * _calledContracts: The addresses of the called contracts
-	 * _methodSignatures: The method signatures of the functions
-	 * _argumentLengths: The lengths of the arguments for each function call
-	 * _arguments: The arguments of all function calls concatenated
-	 * _values: Amount of Ether to send for each respective call
+	 * _actionHashes: The hashes of the `Action` that have been submitted
 	 */
-	function eval(
-		address[] _calledContracts,
-		bytes4[] _methodSignatures,
-		uint[] _argumentLengths,
-		bytes32[] _arguments,
-		uint[] _values
-	) {
-		if (
-			_calledContracts.length != _methodSignatures.length ||
-			_calledContracts.length != _argumentLengths.length ||
-			_calledContracts.length != _values.length
-		) {
-			throw;
-		}
-
+	function eval(bytes32[] _actionHashes) {
 		uint i;
-		uint j;
-		bytes32 hash = sha3(_calledContracts, _methodSignatures, _argumentLengths, _arguments, _values);
+		bytes32 hash = sha3(_actionHashes);
 
-		for (i = 0; i < participants.length; i++) {
-			if (consentStates[hash][participants[i]] == ConsentState.CONSENTED) {
-				consentStates[hash][participants[i]] = ConsentState.EXECUTED;
+		for (i = participants.length; i > 0; i--) {
+			if (consentStates[hash][participants[i-1]] == ConsentState.CONSENTED) {
+				consentStates[hash][participants[i-1]] = ConsentState.EXECUTED;
 			} else {
 				throw;
 			}
 		}
 
-		uint argumentsIndex = 0;
-		for (i = 0; i < _calledContracts.length; i++) {
-
-			bytes32[] memory arguments = new bytes32[](_argumentLengths[i]);
-			for (j = 0; j < _argumentLengths[i]; j++) {
-				arguments[j] = _arguments[argumentsIndex++];
-			}
-
-			if (!_calledContracts[i].call.value(_values[i])(_methodSignatures[i], arguments[i])) {
+		for (i = 0; i < _actionHashes.length; i++) {
+			Action memory action = actions[_actionHashes[i]];
+			if (!(action.initialized && action.target.call.value(action.value)(action.calldata))) {
 				throw;
 			}
 		}
@@ -112,19 +109,6 @@ contract UnanimousConsent {
 	}
 
 	/**
-	 * Sends the Ether stored in the currenct contract. Intended to only be
-	 * called by this contract's `eval`.
-	 *
-	 * _recipient: The recipient of the Ether.
-	 * _amount: The amount of Ether to send.
-	 */
-	function sendEther(address _recipient, uint _amount) external onlySelf {
-		if (!_recipient.send(_amount)) {
-			throw;
-		}
-	}
-
-	/**
 	 * Changes the participants in the current contract. Intended to only be
 	 * called by this contract's `eval`.
 	 *
@@ -135,6 +119,18 @@ contract UnanimousConsent {
 	}
 
 	/**
+	 * Removes a group of `Action` that have been submitted. Intended to be
+	 * called by this contract's `eval`.
+	 *
+	 * _actionHashes: The hashes of the `Action` that have been submitted
+	 */
+	function cleanActions(bytes32[] _actionHashes) external onlySelf {
+		for (uint i = _actionHashes.length; i > 0; i--) {
+			delete actions[_actionHashes[i-1]];
+		}
+	}
+
+	/**
 	 * Cleans up previously approved consents. Intended to only be called by
 	 * this contract's `eval`.
 	 *
@@ -142,9 +138,9 @@ contract UnanimousConsent {
 	 * _participants: The list of address whose hashes should be cleaned
 	 */
 	function clean(bytes32[] _hashes, address[] _participants) external onlySelf {
-		for (uint i = 0; i < _hashes.length; i++) {
-			for (uint j = 0; j < _participants.length; j++) {
-				delete consentStates[_hashes[i]][_participants[j]];
+		for (uint i = _hashes.length; i > 0; i--) {
+			for (uint j = _participants.length; j > 0; j--) {
+				delete consentStates[_hashes[i-1]][_participants[j-1]];
 			}
 		}
 	}
