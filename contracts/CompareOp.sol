@@ -11,7 +11,7 @@ contract CompareOp {
 	 * returns: `true` iff the newer state is strictly superior, `false`
 	 *   otherwise
 	 */
-	function isSuperior(bytes32[] _new, bytes32[] _old) constant returns (bool);
+	function isSuperior(bytes _new, bytes _old) constant returns (bool);
 
 	/**
 	 * Checks if a state can be considered final.
@@ -20,5 +20,5 @@ contract CompareOp {
 	 *
 	 * returns: `true` iff the state can be consider final, `false` otherwise
 	 */
-	function isFinal(bytes32[] _state) constant returns (bool);
+	function isFinal(bytes _state) constant returns (bool);
 }

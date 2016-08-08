@@ -22,7 +22,7 @@ contract Adjudicator {
 	uint timeout;
 
 	// The newest state sent
-	bytes32[] state;
+	bytes state;
 
 	modifier onlyOwner {
 		if (msg.sender == owner) {
@@ -60,7 +60,7 @@ contract Adjudicator {
 	 *
 	 * returns: `true` if sucessful, otherwise `false`
 	 */
-	function submit(bytes32[] _state)
+	function submit(bytes _state)
 		external
 		onlyOwner
 		notFrozen
