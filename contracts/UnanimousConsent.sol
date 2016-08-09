@@ -15,7 +15,7 @@ contract UnanimousConsent {
 	struct Action {
 		address target;
 		uint value;
-		bytes calldata;
+		bytes32[] calldata;
 		bool initialized;
 	}
 
@@ -57,7 +57,7 @@ contract UnanimousConsent {
 	 * _value: The amount of Ether to send
 	 * _calldata: The calldata associated with the call
 	 */
-	function addAction(address _target, uint _value, bytes _calldata) external {
+	function addAction(address _target, uint _value, bytes32[] _calldata) external {
 		Action memory action = Action(_target, _value, _calldata, true);
 		actions[sha3(_target, _value, _calldata)] = action;
 	}
