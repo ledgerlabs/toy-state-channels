@@ -136,7 +136,7 @@ contract UnanimousConsent {
 	 * _hashes: The list of hashes to clean
 	 * _participants: The list of address whose hashes should be cleaned
 	 */
-	function clean(bytes32[] _hashes, address[] _participants) external onlySelf {
+	function cleanConsents(bytes32[] _hashes, address[] _participants) external onlySelf {
 		for (uint i = _hashes.length; i > 0; i--) {
 			for (uint j = _participants.length; j > 0; j--) {
 				delete consentStates[_hashes[i-1]][_participants[j-1]];
