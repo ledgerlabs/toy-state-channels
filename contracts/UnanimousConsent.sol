@@ -99,10 +99,10 @@ contract UnanimousConsent {
 	 *
 	 * returns: `true` if successful, otherwise `false`
 	 */
-	function consent(bytes32[] _hash) returns (bool) {
-		for (uint i = _hash.length; i > 0; i--){
-			if (consentStates[_hash[i-1]][msg.sender] == ConsentState.NONE) {
-				consentStates[_hash[i-1]][msg.sender] = ConsentState.CONSENTED;
+	function consent(bytes32[] _hashes) returns (bool) {
+		for (uint i = _hashes.length; i > 0; i--){
+			if (consentStates[_hashes[i-1]][msg.sender] == ConsentState.NONE) {
+				consentStates[_hashes[i-1]][msg.sender] = ConsentState.CONSENTED;
 			} else {
 				return false;
 			}
