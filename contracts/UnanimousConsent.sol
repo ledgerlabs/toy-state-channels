@@ -13,10 +13,10 @@ contract UnanimousConsent {
 	}
 
 	struct Action {
+		bool initialized;
 		address target;
 		uint value;
 		bytes32[] calldata;
-		bool initialized;
 	}
 
 	// Records the current state of consent for a given hash and address
@@ -58,7 +58,7 @@ contract UnanimousConsent {
 	 * _calldata: The calldata associated with the call
 	 */
 	function addAction(address _target, uint _value, bytes32[] _calldata) external {
-		Action memory action = Action(_target, _value, _calldata, true);
+		Action memory action = Action(true, _target, _value, _calldata);
 		actions[sha3(_target, _value, _calldata)] = action;
 	}
 
