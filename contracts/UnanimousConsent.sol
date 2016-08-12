@@ -93,21 +93,18 @@ contract UnanimousConsent {
 
 	/**
 	 * Provides consent for the hash of an execution call for the sender of the
-	 * message.
+	 * message. Throws if unsucessful.
 	 *
-	 * _hash: The hash of the execution call
-	 *
-	 * returns: `true` if successful, otherwise `false`
+	 * _hashes: The hashes of the execution call
 	 */
-	function consent(bytes32[] _hash) returns (bool) {
-		for (uint i = _hash.length; i > 0; i--){
-			if (consentStates[_hash[i-1]][msg.sender] == ConsentState.NONE) {
-				consentStates[_hash[i-1]][msg.sender] = ConsentState.CONSENTED;
+	function consent(bytes32[] _hashes) {
+		for (uint i = _hashes.length; i > 0; i--) {
+			if (consentStates[_hashes[i-1]][msg.sender] == ConsentState.NONE) {
+				consentStates[_hashes[i-1]][msg.sender] = ConsentState.CONSENTED;
 			} else {
-				return false;
+				throw;
 			}
 		}
-		return true;
 	}
 
 	/**
