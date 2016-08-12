@@ -13,10 +13,10 @@ contract UnanimousConsent {
 	}
 
 	struct Action {
+		bool initialized;
 		address target;
 		uint value;
 		bytes32[] calldata;
-		bool initialized;
 	}
 
 	// Records the current state of consent for a given hash and address
@@ -58,7 +58,7 @@ contract UnanimousConsent {
 	 * _calldata: The calldata associated with the call
 	 */
 	function addAction(address _target, uint _value, bytes32[] _calldata) external {
-		Action memory action = Action(_target, _value, _calldata, true);
+		Action memory action = Action(true, _target, _value, _calldata);
 		actions[sha3(_target, _value, _calldata)] = action;
 	}
 
@@ -93,18 +93,17 @@ contract UnanimousConsent {
 
 	/**
 	 * Provides consent for the hash of an execution call for the sender of the
-	 * message.
+	 * message. Throws if unsucessful.
 	 *
-	 * _hash: The hash of the execution call
-	 *
-	 * returns: `true` if successful, otherwise `false`
+	 * _hashes: The hashes of the execution call
 	 */
-	function consent(bytes32 _hash) returns (bool) {
-		if (consentStates[_hash][msg.sender] == ConsentState.NONE) {
-			consentStates[_hash][msg.sender] = ConsentState.CONSENTED;
-			return true;
-		} else {
-			return false;
+	function consent(bytes32[] _hashes) {
+		for (uint i = _hashes.length; i > 0; i--) {
+			if (consentStates[_hashes[i-1]][msg.sender] == ConsentState.NONE) {
+				consentStates[_hashes[i-1]][msg.sender] = ConsentState.CONSENTED;
+			} else {
+				throw;
+			}
 		}
 	}
 
@@ -137,7 +136,7 @@ contract UnanimousConsent {
 	 * _hashes: The list of hashes to clean
 	 * _participants: The list of address whose hashes should be cleaned
 	 */
-	function clean(bytes32[] _hashes, address[] _participants) external onlySelf {
+	function cleanConsents(bytes32[] _hashes, address[] _participants) external onlySelf {
 		for (uint i = _hashes.length; i > 0; i--) {
 			for (uint j = _participants.length; j > 0; j--) {
 				delete consentStates[_hashes[i-1]][_participants[j-1]];
