@@ -34,10 +34,19 @@ contract examples {
 
     //register actions with the universal consent contract
     uint[] actionsToSend = new uint[](numOps);
-    actionsToSend[0] = Action(_target, _value, _calldata, true); //instantiate lockAdjudicator
-    actionsToSend[1] = Action(_target, _value, _calldata, true); //instantiate payment channel adjudicator
-    actionsToSend[2] = Action(_target, _value, _calldata, true); //update the state of the payment adjudicator
-    actionsToSend[3] = Action(_target, _value, _calldata, true); //make the payment based on the finalised state
+
+    string functionSignature = "foo(uint256 arg)";
+    actionsToSend[0] = Action(_target, 0, calculateTxData(functionSignature, _args), true); //instantiate lockAdjudicator
+
+    functionSignature = "submit(bytes32[] _state)";
+    actionsToSend[1] = Action(_target, 0, calculateTxData(functionSignature, _args), true); //instantiate payment channel adjudicator
+
+    functionSignature = "submit(bytes32[] _state)";
+    actionsToSend[2] = Action(_target, 0, calculateTxData(functionSignature, _args), true); //update the state of the payment adjudicator
+
+    functionSignature = "submit(bytes32[] _state)";
+    actionsToSend[3] = Action(_target, 10000, calculateTxData(functionSignature, _args), true); //make the payment based on the finalised state
+
     sendActions(actionsToSend);
 
     //send consents to the universal consent contract
@@ -79,7 +88,7 @@ contract examples {
   }
 
   //helper function to calculate what should go in the calldata field for a given function call
-  function calculateTxData(string _functionSignature, bytes32[] _args) returns(bytes32) {
+  function calculateTxData(string _functionSignature, bytes32[] _args) returns(bytes32[]) {
     //todo: finish properly forming the actual thing
     return bytes4(sha3(_functionSignature));
   }
