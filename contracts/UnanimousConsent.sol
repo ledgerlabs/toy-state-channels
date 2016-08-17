@@ -13,9 +13,8 @@ contract UnanimousConsent {
 	}
 
 	struct Action {
-		bool initialized;
 		address target;
-		uint value;
+		bytes4 methodSignature;
 		bytes32[] calldata;
 	}
 
@@ -47,19 +46,17 @@ contract UnanimousConsent {
 	 */
 	function UnanimousConsent(address[] _participants) {
 		participants = _participants;
-		bulletinBoard = new BulletinBoard(this);
 	}
 
 	/**
 	 * Adds an `Action` to potentially be executed.
 	 *
 	 * _target: The target of the execution call
-	 * _value: The amount of Ether to send
 	 * _calldata: The calldata associated with the call
 	 */
-	function addAction(address _target, uint _value, bytes32[] _calldata) external {
-		Action memory action = Action(true, _target, _value, _calldata);
-		actions[sha3(_target, _value, _calldata)] = action;
+	function addAction(address _target, bytes4 _methodSignature, bytes32[] _calldata) external {
+		Action memory action = Action(_target, _methodSignature, _calldata);
+		actions[sha3(_target, _methodSignature, _calldata)] = action;
 	}
 
 	/**
@@ -85,7 +82,7 @@ contract UnanimousConsent {
 
 		for (i = 0; i < _actionHashes.length; i++) {
 			Action memory action = actions[_actionHashes[i]];
-			if (!(action.initialized && action.target.call.value(action.value)(action.calldata))) {
+			if (!(action.target > 0 && action.target.delegatecall(action.methodSignature, action.calldata))) {
 				throw;
 			}
 		}
