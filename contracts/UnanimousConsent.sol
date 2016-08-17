@@ -1,5 +1,3 @@
-import "BulletinBoard.sol";
-
 /**
  * This contract performs an "eval" on arbitrary contracts but only with the
  * consent of all participants named.
@@ -27,9 +25,6 @@ contract UnanimousConsent {
 
 	// Holds all of the participants in the current UnanimousConsent contract
 	address[] participants;
-
-	// Holds the BulletinBoard for counterfactual addressing
-	BulletinBoard public bulletinBoard;
 
 	modifier onlySelf {
 		if (msg.sender == address(this)) {
