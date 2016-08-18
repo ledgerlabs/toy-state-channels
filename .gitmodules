@@ -1,0 +1,4 @@
+[submodule "web/js/web3.js"]
+	path = web/js/web3.js
+	url = https://github.com/ethereum/web3.js.git
+	branch = master
