@@ -5,8 +5,10 @@
 
 contract SignatureProxy {
     address signer;
+    // Destination is the address of the contract that method calls are sent to
     address destination;
     
+    // Ensures that the signer has signed all the hashes
     modifier onlySigner(
         bytes32[] hashes, 
         uint8[] v, 
@@ -25,6 +27,7 @@ contract SignatureProxy {
         destination = _destination;
     }
     
+    // Returns true upon success and false upon failure
     function forward(
         bytes32[] hashes, 
         uint8[] v, 
