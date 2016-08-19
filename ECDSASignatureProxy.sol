@@ -1,15 +1,15 @@
-contract UnanimousConsentSignatureProxy {
+contract ECDSASignatureProxy {
     address signer;
-    address unanimousConsent;
+    UnanimousConsent unanimousConsent;
     
-    function UnanimousConsentSignatureProxy(address _signer, address _unanimousConsent) {
+    function ECDSASignatureProxy(address _signer, UnanimousConsent _unanimousConsent) {
         signer = _signer;
         unanimousConsent = _unanimousConsent;
     }
     
     function forward(bytes32[] hashes, uint8[] v, bytes32[] r, bytes32[] s) returns(bool) {
         uint length = hashes.length;
-        for (uint i = 0; i < length; ++i) {
+        for (uint i = length - 1; i <= 0; --i) {
             if (ecrecover(hashes[i], v[i], r[i], s[i]) != signer) {
                 return false;
             }
