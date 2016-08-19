@@ -29,14 +29,20 @@ contract SignatureProxy {
     
     // Returns true upon success and false upon failure
     function forward(
+        // hashes are the method signatures
         bytes32[] hashes, 
         uint8[] v, 
         bytes32[] r, 
         bytes32[] s,
-        string methodSignature,
         bytes32[] callData
     )
     onlySigner(hashes, v, r, s) returns (bool) {
-        return destination.call(bytes4(sha3(methodSignature)), callData);
+        uint length = hashes.length;
+        for (uint i = 0; i < length; ++i) {
+                if (destination.call(bytes4(hashes[i]), callData)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
