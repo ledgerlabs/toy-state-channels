@@ -19,7 +19,7 @@ contract ECDSASignatureProxy {
 		if (ecrecover(hash, _v, _r, _s) != signer) {
 			return false;
 		} else {
-			unanimousConsent.consent(hashes);
+			unanimousConsent.consent(_hashes);
 			return true;
 		}
 	}
