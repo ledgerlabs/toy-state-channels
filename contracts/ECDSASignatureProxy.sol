@@ -16,7 +16,7 @@ contract ECDSASignatureProxy {
 	// Checks if all of the hashes have been signed off on
 	function forward(bytes32[] _hashes, uint8 _v, bytes32 _r, bytes32 _s) external returns (bool) {
 		bytes32 hash = sha3(hashes);
-		if (ecrecover(_hash, _v, _r, _s) != signer) {
+		if (ecrecover(hash, _v, _r, _s) != signer) {
 			return false;
 		} else {
 			unanimousConsent.consent(hashes);
