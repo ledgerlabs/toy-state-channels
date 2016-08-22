@@ -1,7 +1,6 @@
 var Web3 = require('web3');
 var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 var Tx = require('ethereumjs-tx');
-var privateKey = new Buffer('e331b6d69882b4cb4ea581d88e0b604039a3de5967688d3dcffdd2270c0fd109', 'hex')
 
 function getRawTransactionString(
         privateKey,
