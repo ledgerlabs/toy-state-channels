@@ -22,6 +22,7 @@ contract ECDSASignatureProxy {
                 return false;
             }
         }
-        return unanimousConsent.call(bytes4(sha3("consent(bytes32)")), hashes);
+        unanimousConsent.consent(hashes);
+        return true;
     }
 }
