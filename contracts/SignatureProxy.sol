@@ -8,17 +8,15 @@ contract SignatureProxy {
     // Destination is the address of the contract that method calls are sent to
     address destination;
     
-    // Ensures that the signer has signed all the hashes
-    modifier onlySigner(
-        bytes32[] hashes, 
-        uint8[] v, 
-        bytes32[] r, 
-        bytes32[] s
+    // Ensures that the signer has signed the hash of the desired method call
+     modifier onlySigner(
+        // hash is sha3("methodName(paramType,paraType...)")
+        bytes32 hash, 
+        uint8 v, 
+        bytes32 r, 
+        bytes32 s
     ) {
-        if (hashes.length != v.length || v.length != r.length || v.length != s.length) throw;
-        for (uint i = hashes.length - 1; i >= 0; --i) {
-            if (ecrecover(hashes[i], v[i], r[i], s[i]) != signer) throw;
-        }
+            if (ecrecover(hash, v, r, s) != signer) throw;
         _
     }
     
@@ -29,20 +27,13 @@ contract SignatureProxy {
     
     // Returns true upon success and false upon failure
     function forward(
-        // hashes are the method signatures
-        bytes32[] hashes, 
-        uint8[] v, 
-        bytes32[] r, 
-        bytes32[] s,
+        bytes32 hash, 
+        uint8 v, 
+        bytes32 r, 
+        bytes32 s,
         bytes32[] callData
     )
-    onlySigner(hashes, v, r, s) returns (bool) {
-        uint length = hashes.length;
-        for (uint i = 0; i < length; ++i) {
-                if (destination.call(bytes4(hashes[i]), callData)) {
-                return false;
-            }
-        }
-        return true;
+    onlySigner(hash, v, r, s) returns (bool) {
+        return destination.call(bytes4(hash), callData);
     }
 }
