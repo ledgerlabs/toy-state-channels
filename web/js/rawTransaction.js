@@ -1,29 +1,23 @@
-var Web3 = require('web3');
-var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-var Tx = require('ethereumjs-tx');
+/**
+* Include the ethereumjs-tx.js file in the index.html file
+* Download it here: https://github.com/ethereumjs/browser-builds
+**/
+
+if (typeof web3 !== 'undefined') {
+        web3 = new Web3(web3.currentProvider);
+} else {
+    // set the provider you want from Web3.providers
+    web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+}
 
 function getRawTransactionString(
         privateKey,
         rawTx
 ) {
         var args = Array.prototype.slice.call(arguments, 0);
-        privateKey = new Buffer(privateKey, 'hex');
-        var tx = new Tx(rawTx);
+        privateKey = EthJS.Buffer.Buffer(privateKey, 'hex');
+        var tx = new EthJS.Tx(rawTx);
         tx.sign(privateKey);
         var serializedTx = tx.serialize();
-        console.log(serializedTx.toString('hex'));
+        return serializedTx.toString('hex');
 }
-
-/** Example
-* getRawTransactionString(
-*         'e331b6d69882b4cb4ea581d88e0b604039a3de5967688d3dcffdd2270c0fd109',
-*         {
-*                 nonce: '0x00',
-*                 gasPrice: '0x09184e72a000',
-*                 gasLimit: '0x2710',
-*                 to: '0x0000000000000000000000000000000000000000',
-*                 value: '0x00',
-*                 data: '0x7f7465737432000000000000000000000000000000000000000000000000000000600057'
-*         }
-* );
-**/
