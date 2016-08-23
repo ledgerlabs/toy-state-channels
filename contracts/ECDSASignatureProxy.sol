@@ -1,4 +1,4 @@
-import "UnanimousConsent.sol";
+import "./UnanimousConsent.sol";
 
 /**
 * This contract will consent to some hashes on behalf of a specified

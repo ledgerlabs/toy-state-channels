@@ -1,0 +1,11 @@
+{
+  "name": "payment-channel",
+  "version": "1.0.0",
+  "description": "A payment channel built on top of some Ethereum contracts.",
+  "scripts": {},
+  "author": "Ledger Labs",
+  "license": "MIT",
+  "dependencies": {
+    "solc": "^0.3.6"
+  }
+}

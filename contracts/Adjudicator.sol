@@ -1,4 +1,4 @@
-import "CompareOp.sol";
+import "./CompareOp.sol";
 
 /**
  * This contract ensures that the latest signed state between some parties is

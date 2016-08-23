@@ -1,4 +1,4 @@
-import "CompareOp.sol";
+import "./CompareOp.sol";
 
 /**
  * A CompareOp which works specifically for nonce-based states.
