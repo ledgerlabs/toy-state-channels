@@ -1,8 +1,11 @@
 BUILD_DIR = web/js/compiled/
 OUTPUT = $(BUILD_DIR)code.js
 SOLC = web/node_modules/.bin/solcjs
-CONTRACTS = $(addprefix contracts/, $(addsuffix .sol, \
-			UnanimousConsent CallLib BulletinBoard CompareOp Adjudicator Rules NonceCompareOp ECDSASignatureProxy \
+CONTRACTS = $(addprefix contracts/,$(addsuffix .sol, \
+			UnanimousConsent CallLib BulletinBoard \
+			CompareOp Adjudicator Rules NonceCompareOp \
+			ECDSASignatureProxy NonceCompareOpSingleton \
+			AdjudicatorPoster \
 			))
 
 .PHONY: abin clean
@@ -19,6 +22,7 @@ $(OUTPUT) : abin
 
 abin : | $(SOLC) $(BUILD_DIR)
 	 $(SOLC) --abi --bin --output-dir $(BUILD_DIR) $(CONTRACTS)
+	 ls $(BUILD_DIR)*.abi $(BUILD_DIR)*.bin &> /dev/null
 
 $(SOLC) :
 	cd web/ && npm install
