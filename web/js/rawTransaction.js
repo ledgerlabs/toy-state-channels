@@ -11,13 +11,41 @@ if (typeof web3 !== 'undefined') {
 }
 
 function getRawTransactionString(
-        privateKey,
-        rawTx
+        address,
+        to,
+        gas,
+        value,
+        bytecode
 ) {
-        var args = Array.prototype.slice.call(arguments, 0);
-        privateKey = EthJS.Buffer.Buffer(privateKey, 'hex');
+        var rawTx = {
+                to: to,
+                gas: gas,
+                value: value,
+                data: bytecode
+        }
         var tx = new EthJS.Tx(rawTx);
-        tx.sign(privateKey);
+        var rawArray = EthJS.Util.rlphash(tx.raw.slice(0, 6));
+        var toBeHashed = '0x';
+        for (var i = 0; i < rawArray.length; ++i) {
+                toBeHashed += ('00' + rawArray[i].toString(16)).slice(-2);
+        }
+        var signature = web3.eth.sign(address, toBeHashed);
+        tx.r = new EthJS.Buffer.Buffer(signature.slice(2, 66), 'hex');
+        tx.s = new EthJS.Buffer.Buffer(signature.slice(66, 130), 'hex');
+        tx.v = new EthJS.Buffer.Buffer(signature.slice(-2), 'hex');
+        console.log(tx);
         var serializedTx = tx.serialize();
         return serializedTx.toString('hex');
 }
+
+/**
+* Example call:
+* var woo = getRawTransactionString(
+*       '0xfb09946a02bd28edf25c8b35618822e86ac0de96',
+*       '0x0000000000000000000000000000000000000000',
+*       '0x47b760',
+*       '0x00',
+*       '0x'
+* );
+**/
+
