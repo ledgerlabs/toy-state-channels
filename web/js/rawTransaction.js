@@ -11,7 +11,7 @@ if (typeof web3 !== 'undefined') {
 }
 
 function getRawTransactionString(
-        address,
+        senderAddress,
         to,
         gas,
         value,
@@ -29,7 +29,7 @@ function getRawTransactionString(
         for (var i = 0; i < rawArray.length; ++i) {
                 toBeHashed += ('00' + rawArray[i].toString(16)).slice(-2);
         }
-        var signature = web3.eth.sign(address, toBeHashed);
+        var signature = web3.eth.sign(senderAddress, toBeHashed);
         tx.r = new EthJS.Buffer.Buffer(signature.slice(2, 66), 'hex');
         tx.s = new EthJS.Buffer.Buffer(signature.slice(66, 130), 'hex');
         tx.v = new EthJS.Buffer.Buffer(signature.slice(-2), 'hex');
