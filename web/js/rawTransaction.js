@@ -33,7 +33,6 @@ function getRawTransactionString(
         tx.r = new EthJS.Buffer.Buffer(signature.slice(2, 66), 'hex');
         tx.s = new EthJS.Buffer.Buffer(signature.slice(66, 130), 'hex');
         tx.v = new EthJS.Buffer.Buffer(signature.slice(-2), 'hex');
-        console.log(tx);
         var serializedTx = tx.serialize();
         return serializedTx.toString('hex');
 }
