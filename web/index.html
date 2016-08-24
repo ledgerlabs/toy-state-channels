@@ -3,17 +3,18 @@
 		<title>Example Payment Channel</title>
 		<script src="https://code.jquery.com/jquery-3.0.0.min.js" integrity="sha256-JmvOoLtYsmqlsWxa7mDSLMwa6dZ9rrIdtrrVYRnDRH0=" crossorigin="anonymous"></script>
 		<script src="/js/web3.js/dist/web3.min.js"></script>
+		<script src="/js/compiled/code.js"></script>
 		<script src="/js/script.js"></script>
 	</head>
 	<body>
 		<h1>Example Payment Channel</h1>
 		Transction Sender/Signer: <select id="sender" class="addresses"></select>
 
-		<h2>TODO: Add Proper Section Headers</h2>
+		<h2>Contract Initialization</h2>
 		<h3>Create UnanimousConsent</h3>
 		<form action="">
 			Add Participants:
-			<input type="text" name="address" /><br />
+			<select class="addresses" name="participant"></select><br />
 			<input type="button" value="Add" onClick="addUnanimousConsentParticipant(form)" />
 			<input type="button" value="Clear" onClick="clearUnanimousConsentParticipants(form)" />
 			<br /><br />
@@ -22,5 +23,13 @@
 			<ul class="participants"></ul>
 			<input type="button" value="Create" onClick="createUnanimousConsent(form)" />
 		</form>
+
+		<h3>Attach to Existing UnanimousConsent</h3>
+		<form action="" id="existingContract">
+			Address:
+			<input type="text" name="address" /><br />
+			<input type="button" value="Attach" onClick="attach(this.form)" /><br />
+		</form>
+
 	</body>
 </html>

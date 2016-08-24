@@ -8,7 +8,7 @@ if (typeof web3 !== 'undefined') {
 var UnanimousConsent;
 
 function addUnanimousConsentParticipant(form) {
-	$(form).find(".participants").append("<li>" +form.address.value +"</li>");
+	$(form).find(".participants").append("<li>" +web3.eth.accounts[form.participant.value] +"</li>");
 }
 
 function clearUnanimousConsentParticipants(form) {
@@ -21,21 +21,24 @@ function createUnanimousConsent(form) {
 				return $(this).text();
 			}).get();
 
-//	UnanimousConsent = web3.eth.contract(/*unanimous interface*/).new(
-//			addresses,
-//			{
-//				from: web3.eth.accounts[$('#sender').val()],
-//				data: /*unanimous code*/,
-//				gas: 4700000
-//			},
-//			if (typeof contract.address !== 'undefined') {
-//				// TODO: make this work $('#existingContract input[name=address]').val(contract.address);
-//				localStorage.setItem('unanimousAddress', contract.address);
-//				alert('Contract has been mined at: ' +contract.address);
-//			} else {
-//				alert('Contract transaction: ' +contract.transactionHash);
-//			});
+	UnanimousConsent = web3.eth.contract(UNANIMOUSCONSENT_ABI).new(
+			addresses,
+			{
+				from: web3.eth.accounts[$('#sender').val()],
+				data: UNANIMOUSCONSENT_BIN,
+				gas: 4700000
+			}, function (e, contract) {
+				if (typeof contract.address !== 'undefined') {
+					// TODO: make this work $('#existingContract input[name=address]').val(contract.address);
+					localStorage.setItem('unanimousAddress', contract.address);
+					alert('Contract has been mined at: ' +contract.address);
+				} else {
+					alert('Contract transaction: ' +contract.transactionHash);
+				}
+			});
 }
+
+function attach(form) {}
 
 $(document).ready(function () {
 	for (var i = 0; i < web3.eth.accounts.length; i++) {
