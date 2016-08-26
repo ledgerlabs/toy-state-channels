@@ -83,6 +83,7 @@ contract Adjudicator {
 		if (!compareOp.isFinal(state)) {
 			lastTimestamp = 0;
 			frozen = false;
+			AdjudicatorUnfrozen();
 			return true;
 		} else {
 			return false;
@@ -98,6 +99,7 @@ contract Adjudicator {
 	function finalize() external notFrozen returns (bool) {
 		if (compareOp.isFinal(state) || (lastTimestamp != 0 && now > lastTimestamp + timeout)) {
 			frozen = true;
+			AdjudicatorFinalized(state);
 			return true;
 		} else {
 			return false;
