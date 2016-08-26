@@ -185,22 +185,28 @@ function addNonceOpAddress(rawTransaction) {
 // FOLLOW THESE STEPS EXACTLY ONCE NONCEOP HAS (OR COUNTERFACTUALLY HAS) AN ADDRESS
 
 // Step 1: sign a transaction to add the action of instantiating an adjudicator 
-function adjudicatorConsentInstantiation(form) {
+function adjudicatorAddActionInstantiation(form) {
         var rawTransaction = counterfactualCall(
                 'addAction(address,bytes4,bytes32[])',
-                // TODO: define adjudicatorFactoryAddress
-                adjudicatorFactoryAddress,
-                // TODO; get actual method name from adjudicator factory
-                web3.sha3('addAdjudicator(CompareOp,address,uint)').slice(0, 10),
+                // TODO: define callLibAddress
+                callLibAddress,
+                web3.sha3('postAdjudicator(BulletinBoard,bytes32,CompareOp,address,uint256)').slice(0, 10),
+                // TODO: define bulletinBoardAddress somewhere
+                bytes32Padding(localStorage.getItem('bulletinBoardAddress')),
+                // TODO: define someHash somewhere (also what is it hashing)
+                bytes32Padding(someHash),
                 // TODO: call addNonceOpAddress somewhere
                 bytes32Padding(localStorage.getItem('nonceCompareOpAddress').slice(-40)),
                 bytes32Padding(localStorage.getItem('unanimousAddress').slice(-40)),
                 bytes32Padding(parseInt(form.timeout.value).toString(16))
         );
 
+        // See above for notes on the following to be concatenated strings
         var hash = web3.sha3(
-                adjudicatorFactoryAddress +
-                web3.sha3('addAdjudicator(CompareOp,address,uint)').slice(0, 10) +
+                callLibAddress +
+                web3.sha3('postAdjudicator(BulletinBoard,bytes32,CompareOp,address,uint256)').slice(0, 10) +
+                bytes32Padding(localStorage.getItem('bulletinBoardAddress')) +
+                bytes32Padding(someHash) +
                 bytes32Padding(localStorage.getItem('nonceCompareOpAddress').slice(-40)) +
                 bytes32Padding(localStorage.getItem('unanimousAddress').slice(-40)) +
                 bytes32Padding(parseInt(form.timeout.value).toString(16))
