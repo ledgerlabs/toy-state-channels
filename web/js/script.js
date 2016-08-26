@@ -52,6 +52,8 @@ function bytes32Padding(input) {
         return (padded + input).slice(-64);
 }
 
+// Helper function that passes in parameters for getRawTransactionString
+// (Not entirely sure if this helper function is 100% necessary)
 function counterfactualCall(methodString) {
         var parameters = Array.prototype.slice.call(arguments, 1);
         var callData = web3.sha3(methodString).slice(0, 10);
@@ -71,7 +73,7 @@ function counterfactualCall(methodString) {
 }
 
 /**
-* In case client is the one making ECDSASignatureProxy
+* // In case client is the one making ECDSASignatureProxy
 * function createECDSASignatureProxy() {
 *       web3.eth.contract(NONCECOMPAREOP_ABI).new(
 *               {
@@ -95,6 +97,9 @@ function counterfactualCall(methodString) {
 **/
 
 //////Counterfactually instantiate nonceCompareOp///////////////////////
+// FOLLOW THESE STEPS EXACTLY
+
+// Step 1: sign a transaction to add the action of instantiating a nonceCompareOp
 function nonceOpAddActionInstantiation(form) {
         var rawTransaction = counterfactualCalls(
                 'addAction(address,bytes4,bytes32[])',
@@ -104,6 +109,7 @@ function nonceOpAddActionInstantiation(form) {
         );
 
         var hash = web3.sha3(
+                // NonceCompareOpSingletonAddress still needs to be defined
                 NonceCompareOpSingletonAddress +
                 web3.sha3('getNonceCompareOp()').slice(0, 10)
         );
@@ -117,7 +123,9 @@ function nonceOpAddActionInstantiation(form) {
         );
 }
 
+// Step 2: all parties must sign transactions of them consenting to the action hash generated in Step 1
 function nonceOpConsentInstantiation(form) {
+        // TODO: test out omitting a parameter when calling a contract method
         var rawTransaction = counterfactualCalls(
                 'consent(bytes32[])',
                 form.actionHash.value
@@ -134,11 +142,14 @@ function nonceOpConsentInstantiation(form) {
         );
 }
 
+// Step 3: sign the transaction to call eval to execute the instantiation
 function nonceOpInstantiate(form) {
         var rawTransaction = counterfactualCalls(
                 'eval(bytes32[])',
                 form.actionHashEval.value
         );
+
+        // TODO: counterfactually store the address of the nonceCompareOp somewhere and somehow
 
         $('#NonceOpEval').append(
                 '<tr><td>' +
@@ -150,6 +161,9 @@ function nonceOpInstantiate(form) {
 }
 
 //////Counterfactually instantiate adjudicator/////////////////
+// FOLLOW THESE STEPS EXACTLY ONCE NONCEOP HAS (OR COUNTERFACTUALLY HAS) AN ADDRESS
+
+// Step 1: sign a transaction to add the action of instantiating an adjudicator 
 function adjudicatorConsentInstantiation(form) {
         var rawTransaction = counterfactualCall(
                 'addAction(address,bytes4,bytes32[])',
@@ -157,16 +171,17 @@ function adjudicatorConsentInstantiation(form) {
                 adjudicatorFactoryAddress,
                 // TODO; get actual method name from adjudicator factory
                 web3.sha3('addAdjudicator(CompareOp,address,uint)').slice(0, 10),
+                // TODO: define nonceCompareOpAddress somewhere
                 bytes32Padding(localStorage.getItem('nonceCompareOpAddress').slice(-40)),
                 bytes32Padding(localStorage.getItem('unanimousAddress').slice(-40)),
                 bytes32Padding(parseInt(form.timeout.value).toString(16))
         );
 
         var hash = web3.sha3(
-                adjudicatorFactoryAddress,
-                'addAdjudicator(CompareOp,address,uint)',
-                bytes32Padding(localStorage.getItem('nonceCompareOpAddress').slice(-40)),
-                bytes32Padding(localStorage.getItem('unanimousAddress').slice(-40)),
+                adjudicatorFactoryAddress +
+                web3.sha3('addAdjudicator(CompareOp,address,uint)').slice(0, 10) +
+                bytes32Padding(localStorage.getItem('nonceCompareOpAddress').slice(-40)) +
+                bytes32Padding(localStorage.getItem('unanimousAddress').slice(-40)) +
                 bytes32Padding(parseInt(form.timeout.value).toString(16))
         );
 
@@ -179,6 +194,7 @@ function adjudicatorConsentInstantiation(form) {
         );
 }
 
+// Step 2: all parties must sign transactions of them consenting to the action hash generated in Step 1
 function adjudicatorConsentInstantiation(form) {
         // Sign consent
         var signature = web3.eth.sign(form.actionHash.value);
@@ -202,6 +218,7 @@ function adjudicatorConsentInstantiation(form) {
         );
 }
 
+// Step 3: sign the transaction to call eval to execute the instantiation
 function adjudicatorInstantiate(form) {
         var rawTransaction = counterfactualCalls(
                 'eval(bytes32[])',
@@ -216,3 +233,14 @@ function adjudicatorInstantiate(form) {
                 '</td>'
         );
 }
+
+$(document).ready(function () {
+        for (var i = 0; i < web3.eth.accounts.length; i++) {
+                $('.addresses').append("<option value=\"" +i +"\">" +web3.eth.accounts[i] +"</option>");
+        }
+
+        // TODO: Persistent state
+        // if (localStorage.getItem('address')) {
+        //      $('#existingContract input[name=address]').val(localStorage.getItem('unanimousAddress'));
+        // }
+});
