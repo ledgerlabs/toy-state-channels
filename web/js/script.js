@@ -160,6 +160,27 @@ function nonceOpInstantiate(form) {
         );
 }
 
+// For getting NonceOpAddress
+function addNonceOpAddress(rawTransaction) {
+        UnanimousConsent.sendRawTransaction(rawTransaction, function(error, hash) {
+                if (error) {
+                        console.error(error);
+                        return;
+                }
+                var filter = web3.eth.filter('latest');
+                filter.watch(function (error, result) {
+                        var receipt = web3.eth.getTransactionReceipt(hash);
+                        if (receipt && receipt.transactionHash == hash && ) {
+                                if (receipt.logs.topics && receipt.logs.topics.length >= 2) {
+                                        // Assumption made is that NonceCompareOpSingleton has an indexed event 
+                                        // that gives the address of the newly created NonceCompareOp and no other                                         // events are fired (this can be modified)
+                                        localStorage.setItem('nonceCompareOpAddress', '0x' + receipt.logs.topics[1].slice(-40));
+                                }
+                        }
+                }
+        });
+}
+
 //////Counterfactually instantiate adjudicator/////////////////
 // FOLLOW THESE STEPS EXACTLY ONCE NONCEOP HAS (OR COUNTERFACTUALLY HAS) AN ADDRESS
 
@@ -171,7 +192,7 @@ function adjudicatorConsentInstantiation(form) {
                 adjudicatorFactoryAddress,
                 // TODO; get actual method name from adjudicator factory
                 web3.sha3('addAdjudicator(CompareOp,address,uint)').slice(0, 10),
-                // TODO: define nonceCompareOpAddress somewhere
+                // TODO: call addNonceOpAddress somewhere
                 bytes32Padding(localStorage.getItem('nonceCompareOpAddress').slice(-40)),
                 bytes32Padding(localStorage.getItem('unanimousAddress').slice(-40)),
                 bytes32Padding(parseInt(form.timeout.value).toString(16))
