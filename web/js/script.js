@@ -193,8 +193,8 @@ function adjudicatorAddActionInstantiation(form) {
                 web3.sha3('postAdjudicator(BulletinBoard,bytes32,CompareOp,address,uint256)').slice(0, 10),
                 // TODO: define bulletinBoardAddress somewhere
                 bytes32Padding(localStorage.getItem('bulletinBoardAddress')),
-                // TODO: define someHash somewhere (also what is it hashing)
-                bytes32Padding(someHash),
+                // TODO: define id
+                bytes32Padding(id),
                 // TODO: call addNonceOpAddress somewhere
                 bytes32Padding(localStorage.getItem('nonceCompareOpAddress').slice(-40)),
                 bytes32Padding(localStorage.getItem('unanimousAddress').slice(-40)),
