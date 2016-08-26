@@ -6,6 +6,10 @@ import "./CompareOp.sol";
  */
 contract Adjudicator {
 
+	event StateSubmitted(bytes32[] _state);
+	event AdjudicatorUnfrozen();
+	event AdjudicatorFinalized(bytes32[] _state);
+
 	// Whether the state has been frozen or not
 	bool public frozen = false;
 
@@ -68,6 +72,7 @@ contract Adjudicator {
 	{
 		if (compareOp.isSuperior(_state, state)) {
 			state = _state;
+			StateSubmitted(_state);
 			return true;
 		} else {
 			return false;
