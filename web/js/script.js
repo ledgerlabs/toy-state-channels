@@ -128,7 +128,7 @@ function nonceOpConsentInstantiation(form) {
         // TODO: test out omitting a parameter when calling a contract method
         var rawTransaction = counterfactualCalls(
                 'consent(bytes32[])',
-                form.actionHash.value
+                bytes32Padding(form.actionHash.value)
         );
 
         $('#NonceOpConsent').append(
@@ -146,7 +146,7 @@ function nonceOpConsentInstantiation(form) {
 function nonceOpInstantiate(form) {
         var rawTransaction = counterfactualCalls(
                 'eval(bytes32[])',
-                form.actionHashEval.value
+                bytes32Padding(form.actionHashEval.value)
         );
 
         // TODO: counterfactually store the address of the nonceCompareOp somewhere and somehow
@@ -231,7 +231,7 @@ function adjudicatorConsentInstantiation(form) {
 
         var rawTransaction = counterfactualCall(
                 'consent(bytes32[])',
-                form.actoinHash.value
+                bytes32Padding(form.actionHash.value)
         );
 
         $('#AdjudicatorConsent').append(
@@ -249,7 +249,7 @@ function adjudicatorConsentInstantiation(form) {
 function adjudicatorInstantiate(form) {
         var rawTransaction = counterfactualCalls(
                 'eval(bytes32[])',
-                form.actionHashEval.value
+                bytes32Padding(form.actionHashEval.value)
         );
 
         $('#AdjudicatorEval').append(
