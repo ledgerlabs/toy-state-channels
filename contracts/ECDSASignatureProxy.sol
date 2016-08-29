@@ -5,6 +5,9 @@ import "./UnanimousConsent.sol";
 * address if and only if the specified address has signed off on it
 */
 contract ECDSASignatureProxy {
+
+	event HashesForwarded(bytes32[] _hashes);
+
 	address signer;
 	UnanimousConsent unanimousConsent;
 
@@ -20,6 +23,7 @@ contract ECDSASignatureProxy {
 			return false;
 		} else {
 			unanimousConsent.consent(_hashes);
+			HashesForwarded(_hashes);
 			return true;
 		}
 	}
