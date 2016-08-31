@@ -4,6 +4,13 @@
  */
 contract UnanimousConsent {
 
+	event ActionAdded(bytes32 indexed _hash, address _target, bytes4 _methodSignature, bytes32[] _calldata);
+	event Evaluated(bytes32[] _actionHashes);
+	event Consented(bytes32[] _hashes);
+	event ParticipantsChanged(address[] _participants);
+	event ActionsCleaned(bytes32[] _actionHashes);
+	event ConsentsCleaned(bytes32[] _hashes, address[] _participants);
+
 	enum ConsentState {
 		NONE,
 		CONSENTED,
@@ -51,7 +58,9 @@ contract UnanimousConsent {
 	 */
 	function addAction(address _target, bytes4 _methodSignature, bytes32[] _calldata) external {
 		Action memory action = Action(_target, _methodSignature, _calldata);
-		actions[sha3(_target, _methodSignature, _calldata)] = action;
+		bytes32 hash = sha3(_target, _methodSignature, _calldata);
+		actions[hash] = action;
+		ActionAdded(hash, _target, _methodSignature, _calldata);
 	}
 
 	/**
@@ -81,6 +90,7 @@ contract UnanimousConsent {
 				throw;
 			}
 		}
+		Evaluated(_actionHashes);
 	}
 
 	/**
@@ -97,6 +107,7 @@ contract UnanimousConsent {
 				throw;
 			}
 		}
+		Consented(_hashes);
 	}
 
 	/**
@@ -107,6 +118,7 @@ contract UnanimousConsent {
 	 */
 	function changeParticipants(address[] _participants) external onlySelf {
 		participants = _participants;
+		ParticipantsChanged(_participants);
 	}
 
 	/**
@@ -119,6 +131,7 @@ contract UnanimousConsent {
 		for (uint i = _actionHashes.length; i > 0; i--) {
 			delete actions[_actionHashes[i-1]];
 		}
+		ActionsCleaned(_actionHashes);
 	}
 
 	/**
@@ -134,6 +147,7 @@ contract UnanimousConsent {
 				delete consentStates[_hashes[i-1]][_participants[j-1]];
 			}
 		}
+		ConsentsCleaned(_hashes, _participants);
 	}
 
 	/**

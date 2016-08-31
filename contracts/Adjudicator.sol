@@ -1,10 +1,14 @@
-import "CompareOp.sol";
+import "./CompareOp.sol";
 
 /**
  * This contract ensures that the latest signed state between some parties is
  * revealed. This solves the data availability contest problem.
  */
 contract Adjudicator {
+
+	event StateSubmitted(bytes32[] _state);
+	event AdjudicatorUnfrozen();
+	event AdjudicatorFinalized(bytes32[] _state);
 
 	// Whether the state has been frozen or not
 	bool public frozen = false;
@@ -68,6 +72,7 @@ contract Adjudicator {
 	{
 		if (compareOp.isSuperior(_state, state)) {
 			state = _state;
+			StateSubmitted(_state);
 			return true;
 		} else {
 			return false;
@@ -83,6 +88,7 @@ contract Adjudicator {
 		if (!compareOp.isFinal(state)) {
 			lastTimestamp = 0;
 			frozen = false;
+			AdjudicatorUnfrozen();
 			return true;
 		} else {
 			return false;
@@ -98,6 +104,7 @@ contract Adjudicator {
 	function finalize() external notFrozen returns (bool) {
 		if (compareOp.isFinal(state) || (lastTimestamp != 0 && now > lastTimestamp + timeout)) {
 			frozen = true;
+			AdjudicatorFinalized(state);
 			return true;
 		} else {
 			return false;

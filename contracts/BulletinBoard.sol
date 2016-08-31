@@ -3,6 +3,8 @@
  */
 contract BulletinBoard {
 
+	event RegistryUpdated(bytes32 indexed _key, address _value);
+
 	// The owner of this contract
 	address owner;
 
@@ -34,6 +36,7 @@ contract BulletinBoard {
 	 */
 	function updateRegistry(bytes32 _key, address _value) onlyOwner {
 		registry[_key] = _value;
+		RegistryUpdated(_key, _value);
 	}
 
 	/**
