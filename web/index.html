@@ -3,6 +3,8 @@
 		<title>Example Payment Channel</title>
 		<script src="https://code.jquery.com/jquery-3.0.0.min.js" integrity="sha256-JmvOoLtYsmqlsWxa7mDSLMwa6dZ9rrIdtrrVYRnDRH0=" crossorigin="anonymous"></script>
 		<script src="/js/web3.js/dist/web3.min.js"></script>
+		<script src="/js/ethereumjs-tx.js"></script>
+		<script src="/js/rawTransaction.js"></script>
 		<script src="/js/compiled/code.js"></script>
 		<script src="/js/script.js"></script>
 	</head>
@@ -31,5 +33,93 @@
 			<input type="button" value="Attach" onClick="attach(this.form)" /><br />
 		</form>
 
+		<h3>Counterfactually Instantiate NonceCompareOp</h3>
+		<form action="">
+			<input type="button" value="Counterfactually Add Action" onClick="nonceOpAddActionInstantiation(this.form)" />
+			<br /><br />
+			Add Action Table
+			<br /><br />
+			<table id="NonceOpAddAction">
+				<tr>
+					<th>Hash</th>
+					<th>Signed Transaction</th>
+				</tr>
+			</table>
+			<br /><br />
+			Consent to the Action Hash:
+			<input type="text" name="actionHash" />
+			<br /><br />
+			<input type="button" value="Counterfactually Consent to Instantiation" onClick="nonceOpConsentInstantiation(this.form)" />
+			<br /><br />
+			Give Consent Table
+			<br /><br />
+			<table id="NonceOpConsent">
+				<tr>
+					<th>Consenter</th>
+					<th>Hash</th>
+					<th>Signed Transaction</th>
+				</tr>
+			</table>
+			<br /><br />
+			Counterfactually Call Eval With Following Action Hash:
+			<input type="text" name="actionHashEval" />
+			<br /><br />
+			<input type="button" value="Counterfactually Instantiation NonceCompareOp" onClick="nonceOpInstantiate(this.form)" />
+			<br /><br />
+			Eval Table
+			<br /><br />
+			<table id="NonceOpEval">
+				<tr>
+					<th>Hash</th>
+					<th>Signed Transaction</th>
+				</tr>
+			</table>
+		</form>
+
+		<h3>Counterfactually Instantiate Adjudicator</h3>
+		<form action="">
+			Enter timeout(in seconds):
+			<input type="number" min="0" name="timeout" />
+			<br /><br />
+			<input type="button" value="Counterfactually Add Action" onClick="adjudicatorAddActionInstantiation(this.form)" />
+			<br /><br />
+			Add Action Table
+			<br /><br />
+			<table id="AdjudicatorAddAction">
+				<tr>
+					<th>Hash</th>
+					<th>Signed Transaction</th>
+				</tr>
+			</table>
+			<br /><br />
+			Consent to the Action Hash:
+			<input type="text" name="actionHash" />
+			<br /><br />
+			<input type="button" value="Counterfactually Consent to Instantiation" onClick="adjudicatorConsentInstantiation(this.form)" />
+			<br /><br />
+			Give Consent Table
+			<br /><br />
+			<table id="AdjudicatorConsent">
+				<tr>
+					<th>Consenter</th>
+					<th>Hash</th>
+					<th>Signed Transaction</th>
+				</tr>
+			</table>
+			<br /><br />
+			Counterfactually Call Eval With Following Action Hash:
+			<input type="text" name="actionHashEval" />
+			<br /><br />
+			<input type="button" value="Counterfactually Instantiation Adjudicator" onClick="adjudicatorInstantiate(this.form)" />
+			<br /><br />
+			Eval Table
+			<br /><br />
+			<table id="AdjudicatorEval">
+				<tr>
+					<th>Hash</th>
+					<th>Signed Transaction</th>
+				</tr>
+			</table>
+		</form>
 	</body>
 </html>
